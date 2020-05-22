@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+{% block style %}
+<style>
+div {
+  margin-left: 50px;
+  margin-right: 50px;
+}
+h6 {
+  margin-left: 50px;
+  margin-right: 50px;
+
+}
+.btn {
+  background-color: DodgerBlue;
+  border: none;
+  color: white;
+
+  cursor: pointer;
+  font-size: 12x;
+  margi
+}
+</style>
+{% endblock style %}
+{% block body %}
+<br><br>
+
+<div>
+<h3>Öğrenciler</h3>
+
+<h6>Hoşgeldiniz, {{hoca}} Bey listede <font color="red"><strong>{{len}} öğrenci</strong></font> bulunmaktadır. Herbirinin bilgilerini aşağıdaki tabloda görebilirsiniz.</h6>
+{% if ders == "" %}
+<a class="btn btn-info" href="/exportxlsx/genel"><i class="fa fa-download"></i><font color="white"><strong> Excel İndir</strong></font></a><br>
+{% endif %}
+{% if ders == "tr" %}
+<a class="btn btn-info" href="/exportxlsx/tr"><i class="fa fa-download"></i><font color="white"><strong> Excel İndir</strong></font></a><br>
+{% endif %}
+{% if ders == "mat" %}
+<a class="btn btn-info" href="/exportxlsx/mat"><i class="fa fa-download"></i><font color="white"><strong> Excel İndir</strong></font></a><br>
+{% endif %}
+{% if ders == "fen" %}
+<a class="btn btn-info" href="/exportxlsx/fen"><i class="fa fa-download"></i><font color="white"><strong> Excel İndir</strong></font></a><br>
+{% endif %}
+<table class="table">
+<thead>
+<br>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Veli Adı Soyadı</th>
+      <th scope="col">Veli Telefon No</th>
+      <th scope="col">Veli İl</th>
+      <th scope="col">Veli E-Mail</th>
+      <th scope="col">Öğrenci Adı Soyadı</th>
+      {% if ders == "" %}
+      <th scope="col">18:00 Türkçe Grubu</th>
+      <th scope="col">21:00 Türkçe Grubu</th>
+      <th scope="col">18:00 Matematik Grubu</th>
+      <th scope="col">21:00 Matematik Grubu</th>
+      <th scope="col">18:00 Fen Grubu</th>
+      <th scope="col">21:00 Fen Grubu</th>
+      {% endif %}
+      {% if ders == "tr" %}
+      <th scope="col">18:00 Türkçe Grubu</th>
+      <th scope="col">21:00 Türkçe Grubu</th>
+      {% endif %}
+      {% if ders == "mat" %}
+      <th scope="col">18:00 Matematik Grubu</th>
+      <th scope="col">21:00 Matematik Grubu</th>
+      {% endif %}
+      {% if ders == "fen" %}
+      <th scope="col">18:00 Fen Grubu</th>
+      <th scope="col">21:00 Fen Grubu</th>
+      {% endif %}
+
+      <th scope="col">Ödeme Bilgisi</th>
+      <th scope="col">Dersle ile ilgili Önerisi</th>
+      {% if ders == "" %}
+      <th scope="col">Sil</th>
+      {% endif %}
+    </tr>
+  </thead>
+<tbody>
+
+{% for i in range(len) %}
+<tr>
+{% if ders == "" %}
+<th scope="row">{{i+1}}-{{data[i][0]}}</th>
+{% else %}
+<th scope="row">{{i+1}}</th>
+{% endif %}
+
+      <td>{{data[i][1]}}</td>
+      <td>{{data[i][2]}}</td>
+      <td>{{data[i][3]}}</td>
+      <td>{{data[i][4]}}</td>
+      <td>{{data[i][5]}}</td>
+      {% if ders == "tr" %}
+      <td>{{data[i][6] | safe}}</td>
+      <td>{{data[i][7] | safe}}</td>
+      {% endif %}
+      {% if ders =="mat" %}
+      <td>{{data[i][8] | safe}}</td>
+      <td>{{data[i][9] | safe}}</td>
+      {% endif %}
+      {% if ders =="fen" %}
+      <td>{{data[i][10] | safe}}</td>
+      <td>{{data[i][11] | safe}}</td>
+      {% endif %}
+      {% if ders == "" %}
+      <td>{{data[i][6] | safe}}</td>
+      <td>{{data[i][7] | safe}}</td>
+      <td>{{data[i][8] | safe}}</td>
+      <td>{{data[i][9] | safe}}</td>
+      <td>{{data[i][10] | safe}}</td>
+      <td>{{data[i][11] | safe}}</td>
+      
+      {% endif %}
+
+
+      <td>{{data[i][12]}}</td>
+      <td>{{data[i][13]}}</td>
+      {% if ders == "" %}
+      <td><a href="/ds/{{data[i][0]}}" class="btn btn-danger"><i class="fa fa-trash-o" style="font-size:24px;color:white"></i></a></td>
+      {% endif %}
+</tr>
+{% endfor %}
+      
+</tbody>
+</table>
+</div>
+{% endblock body %}

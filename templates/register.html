@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block style %}
+<style type="text/css">
+* {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
+}
+
+.vr
+{
+  display:inline;
+  height:100%;
+  width:1px;
+  border:1px inset;
+  margin:5px
+}
+
+</style>
+
+
+
+{% endblock style %}
+{% block body_c %}
+<br><br><br>
+{% from "includes/formhelpers.html" import render_field %}
+
+<h3>Öğrenci Kayıt</h3>
+<hr>
+<form method="post">
+<div class="row">
+  <div class="column">
+  
+
+{{render_field(form.veli_ads,class = "form-control")}}
+{{render_field(form.veli_tel,class = "form-control")}}
+{{render_field(form.veli_il,class = "form-control")}}
+{{render_field(form.veli_email,class = "form-control")}}
+{{render_field(form.ogr_ads,class = "form-control")}}
+
+</div><div class="column">
+{{render_field(form.tr_18,class = "form-control")}}
+{{render_field(form.tr_21,class = "form-control")}}
+<hr>
+{{render_field(form.mat_18,class = "form-control")}}
+{{render_field(form.mat_21,class = "form-control")}}
+<hr>
+{{render_field(form.fen_18,class = "form-control")}}
+{{render_field(form.fen_21,class = "form-control")}}
+</div></div>
+<br><br><br><br><br><br><br><br><br>
+{{render_field(form.odeme_bilgi,class = "form-control")}}
+{{render_field(form.oneriler,class = "form-control")}}
+<button type="submit" class="btn btn-primary">Kaydet</button><br><br><br><br><br><br>
+</form>
+{% endblock body_c %}
