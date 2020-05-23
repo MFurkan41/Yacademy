@@ -3,6 +3,7 @@ from wtforms import Form,StringField,TextAreaField,PasswordField,validators,Bool
 import sqlite3
 import flask_excel as excel
 
+# Öğrenci Girişi için Form
 class StuRegister(Form):
     veli_ads = StringField("Veli Adı Soyadı",validators=[validators.DataRequired()])
     veli_tel = StringField("Veli Telefon Numarası",validators=[validators.DataRequired()])
@@ -18,6 +19,7 @@ class StuRegister(Form):
     odeme_bilgi = TextAreaField("Hangi Derse Ne Kadar Ödediniz?",validators=[validators.DataRequired()])
     oneriler = TextAreaField("Dersler ile ilgili önerileriniz...",validators=[validators.DataRequired()])
 
+# Öğretmenler için Giriş Form
 class LoginForm(Form):
     username = StringField("Kullanıcı Adı",validators=[validators.DataRequired()])
     password = PasswordField("Şifre",validators=[validators.DataRequired()])
