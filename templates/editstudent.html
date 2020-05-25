@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block style %}
+<style>
+p{
+    margin-left:40px
+}
+</style>
+{% endblock style %}
+
+{% block body_c %}
+<br><br><br>
+<h3>Öğrenci Kaydı Düzenle</h3><br>
+{% from "includes/formhelpers.html" import render_field %}
+<p>Öğrenciniz kaydını düzenlemek için ilk önce kaydınız olup olmadığını doğrulamalısınız. Kayıt oluştururken girdiğiniz <i>Veli Telefon Numarası</i> ve <i>Veli E-Mail</i> bilgilerini girip kaydınızı doğrulayabilirsiniz.</p>
+<hr>
+<form method="post">
+{{render_field(form.veli_tel,class = "form-control")}}
+{{render_field(form.veli_email,class = "form-control")}}
+<button type="submit" name = "submit" value="kontrol" class="btn btn-primary">Kaydı Kontrol Et</button>
+</form>
+
+{% endblock body_c %}

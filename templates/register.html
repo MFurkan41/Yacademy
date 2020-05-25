@@ -5,12 +5,10 @@
   box-sizing: border-box;
 }
 
-/* Create two equal columns that floats next to each other */
 .column {
+  margin-left:15px;
   float: left;
-  width: 50%;
-  padding: 10px;
-  height: 300px; /* Should be removed. Only for demonstration */
+  width: 30%;
 }
 
 /* Clear floats after the columns */
@@ -18,23 +16,6 @@
   content: "";
   display: table;
   clear: both;
-}
-
-.row {
-  display: flex;
-}
-
-.column {
-  flex: 50%;
-}
-
-.vr
-{
-  display:inline;
-  height:100%;
-  width:1px;
-  border:1px inset;
-  margin:5px
 }
 
 </style>
@@ -46,12 +27,14 @@
 <br><br><br>
 {% from "includes/formhelpers.html" import render_field %}
 
-<h3>Öğrenci Kayıt</h3>
+
+  {% if form.veli_ads.data == "" %}
+  <h3>Öğrenci Kayıt</h3>
 <hr>
-<form method="post">
+  <form method="post">
 <div class="row">
   <div class="column">
-  
+
 
 {{render_field(form.veli_ads,class = "form-control")}}
 {{render_field(form.veli_tel,class = "form-control")}}
@@ -65,13 +48,55 @@
 <hr>
 {{render_field(form.mat_18,class = "form-control")}}
 {{render_field(form.mat_21,class = "form-control")}}
-<hr>
+<hr></div>
+<div class="column">
 {{render_field(form.fen_18,class = "form-control")}}
 {{render_field(form.fen_21,class = "form-control")}}
-</div></div>
-<br><br><br><br><br><br><br><br><br>
+<hr>
+{{render_field(form.dan_veli,class = "form-control")}}
+{{render_field(form.dan_ogr,class = "form-control")}}
+<hr>
+</div>
+</div>
+<br>
 {{render_field(form.odeme_bilgi,class = "form-control")}}
 {{render_field(form.oneriler,class = "form-control")}}
-<button type="submit" class="btn btn-primary">Kaydet</button><br><br><br><br><br><br>
+<button type="submit" name="submit" value="kaydet"  class="btn btn-primary">Kaydet</button><br><br><br><br><br><br>
 </form>
+{% else %}
+ <h3>Öğrenci Kaydı Güncelleme</h3>
+<hr>
+  <form method="post">
+<div class="row">
+  <div class="column">
+
+
+{{render_field(form.veli_ads,class = "form-control")}}
+{{render_field(form.veli_tel,class = "form-control")}}
+{{render_field(form.veli_il,class = "form-control")}}
+{{render_field(form.veli_email,class = "form-control")}}
+{{render_field(form.ogr_ads,class = "form-control")}}
+
+</div><div class="column">
+{{render_field(form.tr_18,class = "form-control")}}
+{{render_field(form.tr_21,class = "form-control")}}
+<hr>
+{{render_field(form.mat_18,class = "form-control")}}
+{{render_field(form.mat_21,class = "form-control")}}
+<hr></div>
+<div class="column">
+{{render_field(form.fen_18,class = "form-control")}}
+{{render_field(form.fen_21,class = "form-control")}}
+<hr>
+{{render_field(form.dan_veli,class = "form-control")}}
+{{render_field(form.dan_ogr,class = "form-control")}}
+<hr>
+</div>
+</div>
+<br>
+{{render_field(form.odeme_bilgi,class = "form-control")}}
+{{render_field(form.oneriler,class = "form-control")}}
+<button type="submit" name="submit" value="guncelle"  class="btn btn-primary">Güncelle</button><br><br><br><br><br><br>
+</form>
+  {% endif %}
 {% endblock body_c %}

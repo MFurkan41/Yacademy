@@ -40,6 +40,9 @@ h6 {
 {% if ders == "fen" %}
 <a class="btn btn-info" href="/exportxlsx/fen"><i class="fa fa-download"></i><font color="white"><strong> Excel İndir</strong></font></a><br>
 {% endif %}
+{% if ders == "dan" %}
+<a class="btn btn-info" href="/exportxlsx/dan"><i class="fa fa-download"></i><font color="white"><strong> Excel İndir</strong></font></a><br>
+{% endif %}
 <table class="table">
 <thead>
 <br>
@@ -69,6 +72,10 @@ h6 {
       {% if ders == "fen" %}
       <th scope="col">18:00 Fen Grubu</th>
       <th scope="col">21:00 Fen Grubu</th>
+      {% endif %}
+      {% if ders == "dan" %}
+      <th scope="col">Danışmanlık Öğrenci</th>
+      <th scope="col">Danışmanlık Veli</th>
       {% endif %}
 
       <th scope="col">Ödeme Bilgisi</th>
@@ -112,12 +119,16 @@ h6 {
       <td>{{data[i][9] | safe}}</td>
       <td>{{data[i][10] | safe}}</td>
       <td>{{data[i][11] | safe}}</td>
+      <td>{{data[i][12] | safe}}</td>
+      <td>{{data[i][13] | safe}}</td>
       
       {% endif %}
-
-
+      {% if ders == "dan" %}
       <td>{{data[i][12]}}</td>
       <td>{{data[i][13]}}</td>
+      {% endif %}
+      <td>{{data[i][14] | safe}}</td>
+      <td>{{data[i][15] | safe}}</td>
       {% if ders == "" %}
       <td><a href="/ds/{{data[i][0]}}" class="btn btn-danger"><i class="fa fa-trash-o" style="font-size:24px;color:white"></i></a></td>
       {% endif %}
