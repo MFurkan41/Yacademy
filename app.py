@@ -1,17 +1,19 @@
 from flask import Flask,render_template,redirect,url_for,request,flash
-from wtforms import Form,StringField,TextAreaField,PasswordField,validators,BooleanField
+from wtforms import Form,StringField,TextAreaField,PasswordField,validators,BooleanField,ValidationError
 import sqlite3
 import flask_excel as excel
 from wtforms_components import Email
 
+DB_URL = "database.db"
+
 # Öğrenci Girişi için Form
 class StuRegister(Form):
     veli_ads = StringField("Veli Adı Soyadı",validators=[validators.DataRequired()])
-    veli_tel = StringField("Veli Telefon Numarası",validators=[validators.DataRequired()])
+    veli_tel = StringField("Veli Telefon Numarası",validators=[validators.DataRequired()],render_kw={"placeholder": "Örn. 05xxxxxxxxx (bitişik,başında sıfır)"})
     veli_il = StringField("Veli İl",validators=[validators.DataRequired()])
     veli_email = StringField("Veli E-Mail",validators=[validators.DataRequired(),Email(message="Hatalı E-Posta Formatı!")])
     ogr_ads = StringField("Öğrenci Adı",validators=[validators.DataRequired()])
-    tr_18 = BooleanField("Türkçe 18:00 Grubu",default="False")
+    tr_18 = BooleanField("Türkçe 18:00 Grubu")
     tr_21 = BooleanField("Türkçe 21:00 Grubu")
     mat_18 = BooleanField("Matematik 18:00 Grubu")
     mat_21 = BooleanField("Matematik 21:00 Grubu")
@@ -19,8 +21,17 @@ class StuRegister(Form):
     fen_21 = BooleanField("Fen 21:00 Grubu")
     dan_ogr = BooleanField("Danışmanlık Öğrenci")
     dan_veli = BooleanField("Danışmanlık Veli")
-    odeme_bilgi = TextAreaField("Hangi Derse Ne Kadar Ödediniz?",validators=[validators.DataRequired()])
-    oneriler = TextAreaField("Dersler ile ilgili önerileriniz...",validators=[validators.DataRequired()])
+    odeme_bilgi = TextAreaField("Hangi Derse Ne Kadar Ödediniz?",validators=[validators.DataRequired()],render_kw={"placeholder": "Matematik : xx TL ödendi. xx süre için.\nFen            : xx TL ödendi. xx süre için.\nTürkçe...\nDanışmanlık...","rows":5})
+    oneriler = TextAreaField("Dersler ile ilgili önerileriniz...",validators=[validators.DataRequired()],render_kw={"placeholder": "Önerilerinizin kısa olmasına dikkat ediniz.","rows":5})
+
+    def validate_veli_tel(self, veli_tel):
+        veli_tel.data = veli_tel.data.replace(" ","")
+        if(veli_tel.data[0] == "5"):
+            veli_tel.data = "0" + veli_tel.data
+        if(len(veli_tel.data) != 11):
+            veli_tel.data = ""
+            raise ValidationError("Numaranızı 05xxxxxxxxx şeklinde yazınız.")
+
 
 # Öğretmenler için Giriş Form
 class LoginForm(Form):
@@ -28,7 +39,7 @@ class LoginForm(Form):
     password = PasswordField("Şifre",validators=[validators.DataRequired()])
 
 class StuEditForm(Form):
-    veli_tel = StringField("Veli Telefon Numarası",validators=[validators.DataRequired()])
+    veli_tel = StringField("Veli Telefon Numarası",validators=[validators.DataRequired()],render_kw={"placeholder": "Örn. 05xxxxxxxxx (bitişik,başında sıfır)"})
     veli_email = StringField("Veli E-Mail",validators=[validators.DataRequired(),Email(message="Hatalı E-Posta Formatı!")])
 
 app = Flask(__name__)
@@ -40,6 +51,7 @@ def index():
 
 @app.route('/newstu',methods=["GET","POST"])
 def newstu():
+    global DB_URL
     form = StuRegister(request.form)
     
     if(request.method == "POST" and form.validate()):
@@ -58,7 +70,7 @@ def newstu():
         dan_veli = str(form.dan_veli.data)
         odeme_bilgi= str(form.odeme_bilgi.data)
         oneriler= str(form.oneriler.data)
-        baglanti = sqlite3.connect("database.db")
+        baglanti = sqlite3.connect(DB_URL)
         cursor = baglanti.cursor()
         sorgu = "SELECT * FROM students WHERE veli_tel='{}'".format(veli_tel)
         cursor.execute(sorgu)
@@ -81,6 +93,7 @@ def newstu():
 
 @app.route('/teacher',methods=["GET","POST"])
 def teacher():
+    global DB_URL
     usernames = [["myolal","yolal"],["sefa","VGUr8gSm"],["yusuf","W7xvJysC"],["seref","YrBTTY7Y"],["murat","BCHkH2cx"]]
     #usernames = [["myolal","yolal"],["sefa","1234"],["yusuf","1234"],["seref","1234"]]
     form = LoginForm(request.form)
@@ -90,7 +103,7 @@ def teacher():
         for i in range(len(usernames)):
             if(usernames[i][0] == username and usernames[i][1] == password):
                 ders = "tr" if usernames[i][0] == "sefa" else ("mat" if usernames[i][0] == "yusuf" else ("fen" if usernames[i][0] == "seref" else ("dan" if usernames[i][0] == "murat" else (""))))
-        baglanti = sqlite3.connect("database.db")
+        baglanti = sqlite3.connect(DB_URL)
         cursor = baglanti.cursor()
 
         try:
@@ -121,7 +134,8 @@ def teacher():
 
 @app.route("/ds/<id>")
 def deletestu(id):
-    baglanti = sqlite3.connect("database.db")
+    global DB_URL
+    baglanti = sqlite3.connect(DB_URL)
     cursor = baglanti.cursor()
     sorgu = "SELECT * FROM students WHERE id='{}'".format(int(id))
     cursor.execute(sorgu)
@@ -135,7 +149,8 @@ def deletestu(id):
 
 @app.route("/exportxlsx/<ders>")
 def exportxlsx(ders):
-    baglanti = sqlite3.connect("database.db")
+    global DB_URL
+    baglanti = sqlite3.connect(DB_URL)
     cursor = baglanti.cursor()
     u_ders = "Türkçe" if ders == "tr" else("Matematik" if ders == "mat" else("Fen" if ders == "fen" else ("Danışmanlık" if ders == "dan" else "")))
     if ders == "tr" or ders == "fen" or ders == "mat":
@@ -224,14 +239,14 @@ def exportxlsx(ders):
 
 @app.route('/editstu',methods=["GET","POST"])
 def editstu():
-    global liste,veli_email,veli_tel
+    global liste,veli_email,veli_tel,DB_URL
     form_stu = StuEditForm(request.form)
     if(request.method == "POST" and form_stu.validate()):
         if(request.form["submit"] == "kontrol"):
             veli_tel = str(form_stu.veli_tel.data)
             veli_email = str(form_stu.veli_email.data)
 
-            baglanti = sqlite3.connect("database.db")
+            baglanti = sqlite3.connect(DB_URL)
             cursor = baglanti.cursor()
 
             cursor.execute("SELECT * FROM students WHERE veli_tel = '{}' AND veli_email = '{}'".format(veli_tel,veli_email))
@@ -251,10 +266,10 @@ def editstu():
                 form = StuRegister()
                 liste = ["veli_ads","veli_tel","veli_il","veli_email","ogr_ads","tr_18","tr_21","mat_18","mat_21","fen_18","fen_21","dan_ogr","dan_veli","odeme_bilgi","oneriler"]
                 for i in range(0,15):
-                    if(data[i] == "True" or data[i] == "False"):
-                        string = "form." + liste[i] + ".data = " + str(data[i])
+                    if(i == 5 or i == 6 or i == 7 or i == 8 or i == 9 or i == 10 or i == 11 or i == 12):
+                        string = "form." + liste[i] + ".data = " + data[i] + ""
                     else:
-                        string = "form." + liste[i] + ".data = '" + str(data[i]) + "'"
+                        string = "form." + liste[i] + ".data = '''" + str(data[i]) + "'''"
                     #print(data[i],liste[i],string)
                     exec(string)
                 
@@ -266,7 +281,7 @@ def editstu():
         elif(request.form["submit"] == "guncelle"):
             form = StuRegister(request.form)
 
-            baglanti = sqlite3.connect("database.db")
+            baglanti = sqlite3.connect(DB_URL)
             cursor = baglanti.cursor()
             cursor.execute("DELETE FROM students WHERE veli_email='{}' AND veli_tel='{}'".format(veli_email,veli_tel))
             baglanti.commit()
